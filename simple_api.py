@@ -70,7 +70,21 @@ class AppointmentCreate(BaseModel):
     @field_validator('phone_number')
     @classmethod
     def validate_phone_number(cls, v):
-        """Validate phone number format."""
+        """
+        Validate phone number format.
+        
+        Ensures the phone number contains at least 10 digits after removing
+        all non-digit characters.
+        
+        Args:
+            v (str): Phone number to validate
+            
+        Returns:
+            str: Validated phone number
+            
+        Raises:
+            ValueError: If phone number has less than 10 digits
+        """
         digits_only = re.sub(r'[^\d]', '', v)
         if len(digits_only) < 10:
             raise ValueError('Phone number must have at least 10 digits')
@@ -79,7 +93,22 @@ class AppointmentCreate(BaseModel):
     @field_validator('end_time')
     @classmethod
     def validate_end_time(cls, v, info):
-        """Validate that end_time is after start_time."""
+        """
+        Validate that end_time is after start_time.
+        
+        Ensures logical appointment duration by checking that the end time
+        is always after the start time.
+        
+        Args:
+            v (datetime): End time to validate
+            info: Validation info containing other field values
+            
+        Returns:
+            datetime: Validated end time
+            
+        Raises:
+            ValueError: If end time is not after start time
+        """
         if hasattr(info, 'data') and 'start_time' in info.data:
             start_time = info.data['start_time']
             if v <= start_time:
@@ -136,7 +165,19 @@ app.add_middleware(
 
 
 def get_calendar_client() -> GoogleCalendarClient:
-    """Get a calendar client instance."""
+    """
+    Get a configured Google Calendar client instance.
+    
+    Creates and returns a GoogleCalendarClient using the application's
+    configuration. Handles configuration validation and error reporting.
+    
+    Returns:
+        GoogleCalendarClient: Configured calendar client ready for use
+        
+    Raises:
+        HTTPException: If configuration is invalid or client creation fails
+            - 503 Service Unavailable: When calendar client cannot be initialized
+    """
     try:
         config = CalendarConfig()
         logger.info(f"🔧 API Config - Service Account: {config.service_account_file}")
@@ -160,7 +201,19 @@ def get_calendar_client() -> GoogleCalendarClient:
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
-    """Global exception handler."""
+    """
+    Global exception handler for unhandled exceptions.
+    
+    Catches any unhandled exceptions and returns a standardized error response
+    to prevent internal error details from being exposed to clients.
+    
+    Args:
+        request: The FastAPI request object
+        exc (Exception): The unhandled exception
+        
+    Returns:
+        JSONResponse: Standardized error response with 500 status code
+    """
     logger.error(f"Unhandled exception: {exc}")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -178,7 +231,32 @@ async def general_exception_handler(request, exc):
     description="Check if the API is running and can connect to Google Calendar"
 )
 async def health_check() -> HealthResponse:
-    """Health check endpoint."""
+    """
+    Health check endpoint to verify API and Google Calendar connectivity.
+    
+    Performs a comprehensive health check by:
+    1. Testing Google Calendar client initialization
+    2. Verifying connection to Google Calendar API
+    3. Returning detailed status information
+    
+    Returns:
+        HealthResponse: Health status with details about API and calendar connectivity
+            - status: "healthy", "degraded", or "unhealthy"
+            - message: Descriptive status message
+            - timestamp: Current server time
+            - version: API version
+            
+    Examples:
+        Successful response:
+        ```json
+        {
+            "status": "healthy",
+            "message": "API is healthy and connected to Google Calendar",
+            "timestamp": "2025-10-16T20:30:00",
+            "version": "1.0.0"
+        }
+        ```
+    """
     try:
         client = get_calendar_client()
         calendar_status = client.test_connection()
@@ -213,7 +291,66 @@ async def health_check() -> HealthResponse:
     description="Create a new appointment in Google Calendar"
 )
 async def create_appointment(appointment_data: AppointmentCreate) -> AppointmentResponse:
-    """Create a new appointment."""
+    """
+    Create a new appointment in Google Calendar.
+    
+    This endpoint validates the appointment data, creates a Google Calendar event,
+    and returns the appointment details with a link to the created event.
+    
+    Args:
+        appointment_data (AppointmentCreate): Appointment details including:
+            - client_name: Name of the client (1-100 chars)
+            - phone_number: Phone number (min 10 digits)
+            - service_type: Type of service (1-200 chars)
+            - start_time: Appointment start time (ISO format)
+            - end_time: Appointment end time (ISO format)
+            - additional_notes: Optional notes (max 500 chars)
+            - timezone: Optional timezone (defaults to UTC)
+    
+    Returns:
+        AppointmentResponse: Response containing:
+            - success: True if appointment was created
+            - message: Success message
+            - appointment_link: Google Calendar event URL
+            - client_name: Client's name
+            - service_type: Service type
+            - start_time: Appointment start time
+            - end_time: Appointment end time
+    
+    Raises:
+        HTTPException: 
+            - 400 Bad Request: Invalid appointment data (e.g., end_time before start_time)
+            - 422 Unprocessable Entity: Validation errors (automatic from Pydantic)
+            - 500 Internal Server Error: Calendar creation failure
+            - 503 Service Unavailable: Calendar client initialization failure
+    
+    Examples:
+        Request:
+        ```json
+        {
+            "client_name": "Juan Pérez",
+            "phone_number": "+1234567890",
+            "service_type": "Consulta",
+            "start_time": "2025-10-17T14:00:00.000Z",
+            "end_time": "2025-10-17T15:00:00.000Z",
+            "additional_notes": "Primera consulta",
+            "timezone": "America/Mexico_City"
+        }
+        ```
+        
+        Response:
+        ```json
+        {
+            "success": true,
+            "message": "Appointment created successfully",
+            "appointment_link": "https://calendar.google.com/event?eid=...",
+            "client_name": "Juan Pérez",
+            "service_type": "Consulta",
+            "start_time": "2025-10-17T14:00:00",
+            "end_time": "2025-10-17T15:00:00"
+        }
+        ```
+    """
     try:
         logger.info(f"Creating appointment for {appointment_data.client_name}")
         
@@ -276,7 +413,37 @@ async def create_appointment(appointment_data: AppointmentCreate) -> Appointment
     description="Welcome message and API information"
 )
 async def root() -> Dict[str, Any]:
-    """Root endpoint with API information."""
+    """
+    Root endpoint providing API information and available endpoints.
+    
+    Returns basic information about the Calendar Sync API, including
+    version, description, and available endpoints for easy discovery.
+    
+    Returns:
+        Dict[str, Any]: API information containing:
+            - message: Welcome message
+            - description: API description
+            - version: Current API version
+            - docs: URL to interactive documentation
+            - health: URL to health check endpoint
+            - endpoints: Dictionary of available endpoints with their methods
+    
+    Examples:
+        Response:
+        ```json
+        {
+            "message": "Welcome to Calendar Sync API",
+            "description": "Simple API for creating business appointments",
+            "version": "1.0.0",
+            "docs": "/docs",
+            "health": "/health",
+            "endpoints": {
+                "create_appointment": "POST /appointments",
+                "health_check": "GET /health"
+            }
+        }
+        ```
+    """
     return {
         "message": "Welcome to Calendar Sync API",
         "description": "Simple API for creating business appointments",
