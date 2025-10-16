@@ -9,7 +9,7 @@ from .event import Event, AppointmentEvent
 from .appointment_manager import AppointmentManager
 
 __version__ = "1.0.0"
-__author__ = "Dayron Viera Quintero"
+__author__ = "Dayron Viera"
 
 __all__ = [
     "GoogleCalendarClient",

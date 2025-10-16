@@ -9,7 +9,7 @@ from calendar_sync.event import Event, AppointmentEvent
 class TestEvent:
     """Tests for the Event class."""
     
-    def test_event_creation(self):
+    def test_event_creation(self) -> None:
         """Test basic event creation."""
         start_time = datetime(2025, 10, 17, 10, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 11, 0, tzinfo=timezone.utc)
@@ -29,7 +29,7 @@ class TestEvent:
         assert event.location == "Test location"
         assert event.timezone == "America/Mexico_City"
     
-    def test_event_to_google_format(self):
+    def test_event_to_google_format(self) -> None:
         """Test conversion to Google Calendar format."""
         start_time = datetime(2025, 10, 17, 10, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 11, 0, tzinfo=timezone.utc)
@@ -51,7 +51,7 @@ class TestEvent:
         assert 'end' in google_format
         assert google_format['start']['timeZone'] == "America/Mexico_City"
     
-    def test_event_str_representation(self):
+    def test_event_str_representation(self) -> None:
         """Test string representation of event."""
         start_time = datetime(2025, 10, 17, 10, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 11, 0, tzinfo=timezone.utc)
@@ -61,11 +61,10 @@ class TestEvent:
         
         assert str(event) == expected
 
-
 class TestAppointmentEvent:
     """Tests for the AppointmentEvent class."""
-    
-    def test_appointment_creation(self):
+
+    def test_appointment_creation(self) -> None:
         """Test appointment event creation."""
         start_time = datetime(2025, 10, 17, 14, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 15, 0, tzinfo=timezone.utc)
@@ -85,8 +84,8 @@ class TestAppointmentEvent:
         assert appointment.additional_notes == "First visit"
         assert appointment.title == "Appointment - John Doe"
         assert "APPOINTMENT INFORMATION" in appointment.description
-    
-    def test_appointment_description_format(self):
+
+    def test_appointment_description_format(self) -> None:
         """Test appointment description formatting."""
         start_time = datetime(2025, 10, 17, 14, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 15, 0, tzinfo=timezone.utc)
@@ -106,8 +105,8 @@ class TestAppointmentEvent:
         assert "Manicure" in description
         assert "Regular client" in description
         assert "📋 APPOINTMENT INFORMATION" in description
-    
-    def test_appointment_google_format(self):
+
+    def test_appointment_google_format(self) -> None:
         """Test appointment Google Calendar format includes color."""
         start_time = datetime(2025, 10, 17, 14, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 15, 0, tzinfo=timezone.utc)
@@ -125,7 +124,7 @@ class TestAppointmentEvent:
         assert google_format['colorId'] == '9'
         assert google_format['summary'] == "Appointment - Test Client"
     
-    def test_update_notes(self):
+    def test_update_notes(self) -> None:
         """Test updating appointment notes."""
         start_time = datetime(2025, 10, 17, 14, 0, tzinfo=timezone.utc)
         end_time = datetime(2025, 10, 17, 15, 0, tzinfo=timezone.utc)
