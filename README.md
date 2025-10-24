@@ -1,151 +1,280 @@
-# 🎉 Calendar Sync API - FUNCIONANDO PERFECTAMENTE
+# Calendar Sync API
 
-Una API REST con FastAPI para gestión de citas de negocio integrada con Google Calendar.
+A professional FastAPI-based REST API for business appointment management integrated with Google Calendar.
 
-## ✅ Estado: COMPLETAMENTE FUNCIONAL
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)
+![Google Calendar](https://img.shields.io/badge/Google%20Calendar-API-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Tu API está **100% operativa** y crea citas correctamente en Google Calendar.
+## ✨ Features
 
-## 🚀 Características
+- � **Simple REST API**: On-demand appointment creation (no automatic synchronization)
+- 📅 **Google Calendar Integration**: Direct integration with your business calendar
+- ⚡ **Automatic Validation**: Pydantic models with comprehensive data validation
+- 📖 **Auto Documentation**: Interactive Swagger UI at `/docs`
+- 🔧 **Environment Configuration**: Secure `.env` file configuration
+- 🛡️ **Error Handling**: Clear error responses and comprehensive logging
+- 🎯 **Production Ready**: CORS support, proper HTTP status codes, and exception handling
 
-- 📅 **API REST Simple**: Solo crea citas cuando recibe datos (sin sincronización automática)
-- � **Integración Google Calendar**: Conecta con tu calendario específico de negocio
-- ⚙️ **Validación Automática**: Modelos Pydantic validan datos de entrada
-- � **Documentación Automática**: Swagger UI en `/docs`
-- � **Configuración .env**: Carga variables desde archivo de configuración
-- �️ **Manejo de Errores**: Respuestas claras para errores de validación
-
-## 📁 Estructura del Proyecto
+## 🏗️ Project Structure
 
 ```
 calendar_sync/
-├── 🌐 simple_api.py           # ⭐ ARCHIVO PRINCIPAL - API FastAPI
-├── 📦 calendar_sync/          # Lógica de negocio
-│   ├── calendar_client.py     # Cliente de Google Calendar
-│   ├── event.py              # Modelos de eventos
-│   ├── appointment_manager.py # Gestor de citas
-│   └── config.py             # Configuración (.env)
-├── 🔧 credentials.json        # Credenciales de Google (service account)
-├── ⚙️ .env                   # Variables de configuración
-├── 📋 requirements.txt       # Dependencias
-└── 🧪 test_direct.py         # Test directo del módulo
+├── simple_api.py             # 🌟 Main FastAPI application
+├── calendar_sync/            # 📦 Business logic package
+│   ├── __init__.py
+│   ├── calendar_client.py    # Google Calendar client
+│   ├── event.py             # Event models
+│   ├── appointment_manager.py # Appointment business logic
+│   └── config.py            # Configuration management
+├── api/                      # 🔧 Alternative API structure
+│   ├── __init__.py
+│   ├── main.py
+│   └── models.py
+├── tests/                    # 🧪 Unit tests
+│   ├── test_event.py
+│   └── test_config.py
+├── credentials.json          # Google service account credentials
+├── .env                      # Environment variables
+├── .env.example             # Environment template
+├── requirements.txt         # Python dependencies
+└── run_api.py              # Alternative API runner
 ```
 
-## 🔧 Configuración Rápida
+## 🚀 Quick Start
 
-### 1. Instalar dependencias
+### Prerequisites
+
+- Python 3.8+
+- Google Cloud Console account
+- Google Calendar API enabled
+
+### 1. Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/calendar_sync.git
+cd calendar_sync
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configurar Google Calendar
-1. Crear proyecto en [Google Cloud Console](https://console.cloud.google.com/)
-2. Habilitar Google Calendar API
-3. Crear service account y descargar `credentials.json`
-4. Crear calendario específico en Google Calendar
-5. Compartir el calendario con el email del service account
-6. Copiar el Calendar ID
+### 2. Google Calendar Setup
 
-### 3. Configurar variables (.env)
-```env
-GOOGLE_SERVICE_ACCOUNT_FILE=credentials.json
-GOOGLE_CALENDAR_ID=tu_calendar_id@group.calendar.google.com
-BUSINESS_NAME=Mi Negocio
-DEFAULT_TIMEZONE=America/Mexico_City
+1. **Create a Google Cloud Project**
+   - Visit [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+
+2. **Enable Google Calendar API**
+   - Go to "APIs & Services" → "Library"
+   - Search for "Google Calendar API" and enable it
+
+3. **Create Service Account**
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "Service Account"
+   - Download the JSON credentials file as `credentials.json`
+
+4. **Setup Calendar**
+   - Create a dedicated business calendar in Google Calendar
+   - Share the calendar with your service account email
+   - Copy the calendar ID from calendar settings
+
+### 3. Environment Configuration
+
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
 ```
 
-### 4. Ejecutar la API
+Edit `.env` with your settings:
+
+```env
+GOOGLE_SERVICE_ACCOUNT_FILE=credentials.json
+GOOGLE_CALENDAR_ID=your_calendar_id@group.calendar.google.com
+BUSINESS_NAME=Your Business Name
+DEFAULT_TIMEZONE=America/New_York
+```
+
+### 4. Run the API
+
 ```bash
 python simple_api.py
 ```
 
-## 🌐 Endpoints Disponibles
+The API will be available at:
+- **Main API**: http://127.0.0.1:8000
+- **Interactive Docs**: http://127.0.0.1:8000/docs
+- **Health Check**: http://127.0.0.1:8000/health
 
-| Endpoint | Método | Descripción |
-|----------|---------|-------------|
-| `/` | GET | Información de la API |
-| `/health` | GET | Estado de conexión a Google Calendar |
-| `/appointments` | POST | **Crear nueva cita** |
-| `/docs` | GET | Documentación Swagger automática |
+## 📋 API Endpoints
 
-## 📝 Crear una Cita
+| Endpoint | Method | Description | Authentication |
+|----------|--------|-------------|----------------|
+| `/` | GET | API information and status | None |
+| `/health` | GET | Health check and Google Calendar connectivity | None |
+| `/appointments` | POST | **Create new appointment** | None |
+| `/docs` | GET | Interactive API documentation | None |
 
-### Ejemplo de uso:
+## 📝 Usage Examples
+
+### Create an Appointment
+
 ```bash
-curl -X POST "http://localhost:8000/appointments" \
+curl -X POST "http://127.0.0.1:8000/appointments" \
   -H "Content-Type: application/json" \
   -d '{
-    "client_name": "Juan Pérez",
+    "client_name": "John Doe",
     "phone_number": "+1234567890",
-    "service_type": "Consulta",
-    "start_time": "2025-10-17T14:00:00.000Z",
-    "end_time": "2025-10-17T15:00:00.000Z",
-    "additional_notes": "Primera consulta",
-    "timezone": "America/Mexico_City"
+    "service_type": "Business Consultation",
+    "start_time": "2025-10-25T14:00:00.000Z",
+    "end_time": "2025-10-25T15:00:00.000Z",
+    "additional_notes": "First-time client consultation",
+    "timezone": "America/New_York"
   }'
 ```
 
-### Respuesta exitosa:
+### Successful Response
+
 ```json
 {
   "success": true,
   "message": "Appointment created successfully",
   "appointment_link": "https://calendar.google.com/event?eid=...",
-  "client_name": "Juan Pérez",
-  "service_type": "Consulta",
-  "start_time": "2025-10-17T14:00:00",
-  "end_time": "2025-10-17T15:00:00"
+  "client_name": "John Doe",
+  "service_type": "Business Consultation",
+  "start_time": "2025-10-25T14:00:00",
+  "end_time": "2025-10-25T15:00:00"
 }
 ```
 
-## 🧪 Probar la API
+### Health Check
 
-### Health Check:
 ```bash
-curl http://localhost:8000/health
+curl http://127.0.0.1:8000/health
 ```
 
-### Test Directo (sin API):
+```json
+{
+  "status": "healthy",
+  "message": "API is healthy and connected to Google Calendar",
+  "timestamp": "2025-10-24T20:30:00",
+  "version": "1.0.0"
+}
+```
+
+## 🔍 Data Validation
+
+The API automatically validates:
+
+- ✅ **Phone Numbers**: Minimum 10 digits required
+- ✅ **Time Logic**: `end_time` must be after `start_time`
+- ✅ **Required Fields**: Client name, phone, service type, and timestamps
+- ✅ **Date Format**: ISO 8601 format (YYYY-MM-DDTHH:MM:SS.000Z)
+- ✅ **String Lengths**: Appropriate limits for all text fields
+
+## 🧪 Testing
+
+### Run Unit Tests
+
+```bash
+pytest tests/ -v
+```
+
+### Test API Directly
+
 ```bash
 python test_direct.py
 ```
 
-### Documentación Interactiva:
-Visita: http://localhost:8000/docs
+### Interactive Testing
 
-## ⚠️ Validaciones Automáticas
+Visit http://127.0.0.1:8000/docs for the interactive Swagger UI where you can test all endpoints directly in your browser.
 
-La API valida automáticamente:
-- ✅ **Teléfonos**: Mínimo 10 dígitos
-- ✅ **Fechas**: `end_time` debe ser después de `start_time`
-- ✅ **Campos obligatorios**: Nombre, teléfono, servicio, fechas
-- ✅ **Formato**: Fechas en formato ISO (2025-10-17T14:00:00.000Z)
+## 🔧 Configuration Options
 
-## 🎯 ¿Cómo Funciona?
+| Environment Variable | Description | Default | Required |
+|---------------------|-------------|---------|----------|
+| `GOOGLE_SERVICE_ACCOUNT_FILE` | Path to Google service account JSON | `credentials.json` | Yes |
+| `GOOGLE_CALENDAR_ID` | Google Calendar ID | None | Yes |
+| `BUSINESS_NAME` | Your business name | `Calendar Sync` | No |
+| `DEFAULT_TIMEZONE` | Default timezone for appointments | `UTC` | No |
 
-1. **Recibes datos** via POST a `/appointments`
-2. **Validación automática** con Pydantic
-3. **Conexión a Google Calendar** con service account
-4. **Creación del evento** en tu calendario específico
-5. **Respuesta con enlace** directo al evento creado
+## 🚨 Error Handling
 
-## 🏆 Estado del Proyecto
+The API provides comprehensive error handling with clear HTTP status codes:
 
-✅ **API Completamente Funcional**  
-✅ **Citas creándose correctamente**  
-✅ **Validaciones funcionando**  
-✅ **Configuración .env corregida**  
-✅ **Documentación automática**  
-✅ **Lista para producción**  
+- **200 OK**: Successful operations
+- **201 Created**: Appointment created successfully
+- **400 Bad Request**: Invalid request data
+- **422 Unprocessable Entity**: Validation errors
+- **500 Internal Server Error**: Server-side errors
+- **503 Service Unavailable**: Google Calendar connection issues
 
----
+## �️ Architecture
 
-## 🚀 Uso en Producción
+The application follows clean architecture principles:
 
-Tu Calendar Sync API está **lista para usar**. Solo inicia el servidor y comienza a crear citas:
-
-```bash
-python simple_api.py
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   FastAPI       │    │   Business       │    │   Google        │
+│   (REST API)    │───▶│   Logic          │───▶│   Calendar API  │
+│                 │    │   (Appointments) │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │
+         ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐
+│   Pydantic      │    │   Configuration  │
+│   (Validation)  │    │   (.env files)   │
+└─────────────────┘    └──────────────────┘
 ```
 
-**¡Proyecto completado exitosamente!** 🎉
+## 🚀 Production Deployment
+
+### Security Considerations
+
+- Keep `credentials.json` secure and never commit to version control
+- Use environment variables for all sensitive configuration
+- Consider implementing API authentication for production use
+- Review and configure CORS settings appropriately
+
+### Performance
+
+- The API is stateless and can be easily scaled horizontally
+- Google Calendar API has rate limits - consider implementing request throttling for high-traffic scenarios
+- Monitor Google Calendar quota usage
+
+### Monitoring
+
+- Check `/health` endpoint for system monitoring
+- Review application logs for errors and performance metrics
+- Monitor Google Calendar API quota and usage
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [documentation](http://127.0.0.1:8000/docs) when the API is running
+2. Review the health check endpoint at `/health`
+3. Check the application logs for detailed error information
+4. Open an issue in the repository for bugs or feature requests
+
+---
