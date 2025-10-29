@@ -71,20 +71,25 @@ pip install -r requirements.txt
    - Visit [Google Cloud Console](https://console.cloud.google.com/)
    - Create a new project or select an existing one
 
-2. **Enable Google Calendar API**
-   - Go to "APIs & Services" → "Library"
-   - Search for "Google Calendar API" and enable it
+2. **Create Service Account**
+    - Go to: `IAM & Admin` -> `Service Accounts` -> `Create Service Account`.  
+    - Click on +: 
+      - Nombre: calendar-writer
+      - ID: calendar-writer
+      - Descripción: Opcional
 
-3. **Create Service Account**
-   - Go to "APIs & Services" → "Credentials"
-   - Click "Create Credentials" → "Service Account"
-   - Download the JSON credentials file as `credentials.json`
+3. **Download Json**
+    - Click on created account and go to: `Keys` -> `Add Key` -> `Create new key`
+    - Select: `JSON` -> `Create`
 
-4. **Setup Calendar**
-   - Create a dedicated business calendar in Google Calendar
-   - Share the calendar with your service account email
-   - Copy the calendar ID from calendar settings
-
+4. **Share google calendar**
+    - Go to Google Calendar, click on side panel: `Settings and shareing` -> `Share with specific people`
+    - Add the service account email, you can find it on the downloaded json with the format:
+    ```
+    calendar-writer@tu-proyecto.iam.gserviceaccount.com
+    ```
+    - Give permission: `Make changes to events`
+    
 ### 3. Environment Configuration
 
 Copy the example environment file and configure it:
